@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CaseWatch — Public Record Registry</title>
+<meta name="description" content="A transparent public database of reported online misconduct. Search by username, user ID, platform, or case number." />
+<meta property="og:title" content="CaseWatch — Public Record Registry" />
+<meta property="og:description" content="A transparent public database of reported online misconduct. Search reported usernames, user IDs, and platforms. Community accountability since 2026." />
+<meta property="og:type" content="website" />
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap');
+
+:root {
+  --bg:#080a0f;--surface:#0e1118;--card:#111520;--card-hi:#161b28;
+  --border:#1e2436;--border-hi:#2a3048;--red:#d94f4f;--red-dim:#3a1a1a;
+  --amber:#e8a020;--amber-dim:#2e2008;--green:#2eb87a;--green-dim:#0d2a1e;
+  --blue:#3b82f6;--muted:#4a5268;--body:#8892a8;--heading:#d8dde8;--white:#f0f3f8;
+  --mono:'IBM Plex Mono',monospace;--sans:'Inter',sans-serif;--cond:'Barlow Condensed',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--body);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:2px;}
+
+header{position:sticky;top:0;z-index:100;height:56px;background:rgba(8,10,15,0.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.75rem;gap:2rem;}
+.logo-link{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;}
+.logo-svg{width:34px;height:34px;}
+.logo-wordmark{font-family:var(--cond);font-size:1.35rem;font-weight:800;letter-spacing:0.06em;color:var(--white);text-transform:uppercase;line-height:1;}
+.logo-wordmark span{color:var(--red);}
+nav{display:flex;gap:1.75rem;margin-left:auto;}
+nav a{color:var(--muted);font-size:0.78rem;font-weight:500;text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;transition:color 0.15s;}
+nav a:hover{color:var(--body);}
+.header-right{display:flex;align-items:center;gap:0.6rem;margin-left:1.5rem;}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:3px;font-family:var(--sans);font-size:0.8rem;font-weight:600;cursor:pointer;border:none;text-decoration:none;transition:all 0.15s;letter-spacing:0.02em;white-space:nowrap;}
+.btn-primary{background:var(--red);color:#fff;}.btn-primary:hover{background:#c44040;}
+.btn-outline{background:transparent;color:var(--red);border:1px solid var(--red);}.btn-outline:hover{background:rgba(217,79,79,0.08);}
+.btn-ghost{background:transparent;color:var(--body);border:1px solid var(--border);}.btn-ghost:hover{border-color:var(--border-hi);color:var(--heading);}
+.btn-muted{background:var(--surface);color:var(--muted);border:1px solid var(--border);}.btn-muted:hover{color:var(--body);}
+.btn-green{background:var(--green);color:#fff;}.btn-green:hover{background:#239960;}
+.btn[disabled]{opacity:0.4;cursor:not-allowed;pointer-events:none;}
+
+.hero{padding:4.5rem 2rem 3.5rem;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.hero-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 340px;gap:4rem;align-items:center;}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1.25rem;}
+.hero-tag::before{content:'';width:20px;height:1px;background:var(--border-hi);display:block;}
+.hero h1{font-family:var(--cond);font-size:clamp(2.4rem,4.5vw,3.8rem);font-weight:800;color:var(--white);line-height:1.0;letter-spacing:0.02em;text-transform:uppercase;margin-bottom:1.25rem;}
+.hero h1 .accent{color:var(--red);}
+.hero-desc{font-size:0.95rem;color:var(--body);line-height:1.75;max-width:480px;margin-bottom:2rem;}
+.hero-actions{display:flex;gap:0.6rem;flex-wrap:wrap;}
+.stats-panel{background:var(--card);border:1px solid var(--border);border-top:2px solid var(--red);padding:1.5rem;}
+.stats-panel-title{font-family:var(--mono);font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
+.stat-row{display:flex;justify-content:space-between;align-items:baseline;padding:0.55rem 0;border-bottom:1px solid var(--border);}
+.stat-row:last-child{border-bottom:none;}
+.stat-lbl{font-family:var(--mono);font-size:0.72rem;color:var(--muted);}
+.stat-val{font-family:var(--mono);font-size:1.1rem;font-weight:600;color:var(--white);}
+.stat-val.red{color:var(--red);}.stat-val.amber{color:var(--amber);}.stat-val.green{color:var(--green);}
+
+.search-section{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;}
+.search-inner{max-width:1100px;margin:0 auto;}
+.search-row{display:flex;gap:0;border:1px solid var(--border);border-radius:3px;overflow:hidden;}
+.search-row:focus-within{border-color:var(--border-hi);}
+.search-scope{background:var(--card);border:none;border-right:1px solid var(--border);color:var(--body);padding:0 1rem;font-family:var(--mono);font-size:0.78rem;cursor:pointer;min-width:130px;}
+.search-scope:focus{outline:none;}
+.search-scope option{background:var(--card);}
+.search-field{flex:1;background:var(--card);border:none;color:var(--white);padding:0.8rem 1rem;font-family:var(--mono);font-size:0.85rem;}
+.search-field::placeholder{color:var(--muted);}
+.search-field:focus{outline:none;}
+.search-go{background:var(--red);color:#fff;border:none;padding:0 1.5rem;font-size:0.8rem;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background 0.15s;}
+.search-go:hover{background:#c44040;}
+.filter-bar{display:flex;gap:0.4rem;margin-top:0.75rem;flex-wrap:wrap;align-items:center;}
+.filter-sep{width:1px;height:20px;background:var(--border);margin:0 0.2rem;}
+.chip{background:transparent;border:1px solid var(--border);color:var(--muted);padding:3px 10px;border-radius:2px;font-size:0.72rem;font-family:var(--mono);cursor:pointer;transition:all 0.15s;letter-spacing:0.04em;}
+.chip:hover{border-color:var(--border-hi);color:var(--body);}
+.chip.active{border-color:var(--red);color:var(--red);background:rgba(217,79,79,0.06);}
+
+.page{max-width:1100px;margin:0 auto;padding:2rem 2rem;}
+.records-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.75rem;}
+.records-title{font-family:var(--mono);font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;}
+.result-info{font-family:var(--mono);font-size:0.72rem;color:var(--muted);}
+
+.case-list{display:flex;flex-direction:column;gap:1px;}
+.case-card{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--border);padding:1.25rem 1.4rem;cursor:pointer;transition:background 0.15s,border-color 0.15s;position:relative;}
+.case-card:hover{background:var(--card-hi);border-color:var(--border-hi);}
+.case-card.sev-high{border-left-color:var(--red);}
+.case-card.sev-medium{border-left-color:var(--amber);}
+.case-card.sev-low{border-left-color:var(--muted);}
+.cc-top{display:flex;align-items:center;justify-content:space-between;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.5rem;}
+.cc-badges{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;}
+.badge{font-family:var(--mono);font-size:0.65rem;font-weight:600;padding:2px 7px;border-radius:2px;text-transform:uppercase;letter-spacing:0.05em;}
+.badge-id{color:var(--amber);background:rgba(232,160,32,0.08);border:1px solid rgba(232,160,32,0.18);}
+.badge-high{color:var(--red);background:rgba(217,79,79,0.1);border:1px solid rgba(217,79,79,0.22);}
+.badge-medium{color:var(--amber);background:rgba(232,160,32,0.08);border:1px solid rgba(232,160,32,0.18);}
+.badge-low{color:var(--muted);background:transparent;border:1px solid var(--border);}
+.badge-verified{color:var(--green);background:rgba(46,184,122,0.08);border:1px solid rgba(46,184,122,0.2);}
+.badge-platform{color:var(--body);background:var(--surface);border:1px solid var(--border);}
+.badge-cat{color:var(--muted);background:transparent;border:1px solid var(--border);}
+.cc-ts{font-family:var(--mono);font-size:0.68rem;color:var(--muted);}
+.cc-title{font-size:0.95rem;font-weight:600;color:var(--heading);margin-bottom:0.75rem;line-height:1.4;}
+.cc-grid{display:grid;grid-template-columns:220px 1fr;gap:1.5rem;}
+.cf{margin-bottom:0.55rem;}
+.cf-lbl{font-family:var(--mono);font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;display:block;margin-bottom:1px;}
+.cf-val{font-family:var(--mono);font-size:0.82rem;color:var(--body);word-break:break-all;}
+.cf-val.hl{color:var(--amber);}
+.cc-desc{font-size:0.85rem;color:var(--body);line-height:1.65;}
+.cc-evidence{margin-top:0.85rem;padding-top:0.85rem;border-top:1px solid var(--border);display:flex;align-items:center;gap:1rem;flex-wrap:wrap;justify-content:space-between;}
+.ev-list{display:flex;gap:0.35rem;flex-wrap:wrap;}
+.ev-pill{font-family:var(--mono);font-size:0.68rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:2px 8px;border-radius:2px;}
+.ev-pill.img-pill{color:var(--blue);border-color:rgba(59,130,246,0.2);background:rgba(59,130,246,0.05);}
+.ev-pill.vid-pill{color:#a78bfa;border-color:rgba(167,139,250,0.2);background:rgba(167,139,250,0.05);}
+.ev-pill.file-pill{color:var(--body);}
+.ev-pill.link-pill{color:var(--green);border-color:rgba(46,184,122,0.2);background:rgba(46,184,122,0.05);}
+.cc-actions{display:flex;gap:0.4rem;}
+
+.empty{text-align:center;padding:5rem 2rem;border:1px dashed var(--border);background:var(--card);}
+.empty-title{font-size:0.9rem;color:var(--heading);margin-bottom:0.35rem;font-weight:500;}
+.empty-sub{font-size:0.82rem;color:var(--muted);}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:200;align-items:center;justify-content:center;padding:1rem;}
+.overlay.open{display:flex;}
+.modal-box{background:var(--card);border:1px solid var(--border);width:100%;border-radius:3px;overflow:hidden;}
+.modal-head{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);}
+.modal-htitle{font-family:var(--cond);font-size:1rem;font-weight:700;color:var(--white);letter-spacing:0.05em;text-transform:uppercase;}
+.modal-close{background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;line-height:1;transition:color 0.15s;padding:2px;}
+.modal-close:hover{color:var(--heading);}
+.modal-body{padding:1.5rem;overflow-y:auto;max-height:80vh;}
+.modal-foot{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.6rem;background:var(--surface);}
+
+.form-group{margin-bottom:1rem;}
+.form-group:last-child{margin-bottom:0;}
+.fg-label{display:block;font-family:var(--mono);font-size:0.67rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.35rem;}
+.fg-req{color:var(--red);}
+.fg-input,.fg-select,.fg-textarea{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--white);padding:0.65rem 0.85rem;font-family:var(--mono);font-size:0.85rem;border-radius:2px;transition:border-color 0.15s;}
+.fg-input::placeholder{color:var(--muted);}
+.fg-input:focus,.fg-select:focus,.fg-textarea:focus{outline:none;border-color:var(--border-hi);}
+.fg-select{cursor:pointer;}
+.fg-select option{background:var(--card);}
+.fg-textarea{resize:vertical;min-height:110px;font-family:var(--sans);font-size:0.88rem;line-height:1.65;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;}
+.form-row .form-group{margin-bottom:0;}
+.form-full{grid-column:1 / -1;}
+.notice-box{padding:0.85rem 1rem;margin-bottom:1.25rem;border-radius:2px;border:1px solid var(--border);border-left:3px solid var(--red);background:rgba(217,79,79,0.05);}
+.notice-title{font-family:var(--mono);font-size:0.67rem;color:var(--red);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.3rem;}
+.notice-text{font-size:0.8rem;color:var(--body);line-height:1.6;}
+.upload-zone{border:2px dashed var(--border);border-radius:3px;padding:1.75rem;text-align:center;cursor:pointer;transition:all 0.15s;background:var(--surface);user-select:none;}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--border-hi);background:var(--card);}
+.upload-title{font-size:0.85rem;color:var(--heading);font-weight:500;margin-bottom:0.25rem;}
+.upload-sub{font-family:var(--mono);font-size:0.7rem;color:var(--muted);}
+.file-list{margin-top:0.6rem;display:flex;flex-direction:column;gap:0.3rem;}
+.file-entry{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);padding:0.35rem 0.75rem;border-radius:2px;font-family:var(--mono);font-size:0.75rem;color:var(--body);}
+.file-entry-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:340px;}
+.file-rm{background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.9rem;transition:color 0.15s;}
+.file-rm:hover{color:var(--red);}
+.link-row{display:flex;gap:0.4rem;}
+.link-row .fg-input{flex:1;}
+.link-entries{margin-top:0.5rem;display:flex;flex-direction:column;gap:0.3rem;}
+.link-entry{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);padding:0.3rem 0.75rem;border-radius:2px;font-family:var(--mono);font-size:0.72rem;color:var(--green);}
+.cb-row{display:flex;align-items:flex-start;gap:0.6rem;margin-bottom:0.6rem;}
+.cb-row input[type=checkbox]{margin-top:2px;accent-color:var(--red);flex-shrink:0;}
+.cb-row label{font-size:0.82rem;color:var(--body);cursor:pointer;line-height:1.5;}
+
+/* Detail modal */
+.detail-meta-bar{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.85rem;}
+.detail-title-text{font-family:var(--cond);font-size:1.6rem;font-weight:700;color:var(--white);letter-spacing:0.03em;text-transform:uppercase;line-height:1.1;margin-bottom:0.6rem;}
+.ts-block{display:flex;flex-direction:column;gap:2px;}
+.ts-line{font-family:var(--mono);font-size:0.7rem;color:var(--muted);}
+.ts-line span{color:var(--body);}
+.detail-section{margin-bottom:1.75rem;}
+.detail-section-label{font-family:var(--mono);font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;padding-bottom:0.5rem;border-bottom:1px solid var(--border);margin-bottom:1rem;}
+.detail-fields-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;}
+.detail-desc{background:var(--surface);border:1px solid var(--border);padding:1rem 1.1rem;border-radius:2px;font-size:0.88rem;color:var(--body);line-height:1.75;white-space:pre-wrap;word-break:break-word;}
+.evidence-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:0.6rem;}
+.evidence-card{background:var(--surface);border:1px solid var(--border);padding:0.85rem 0.75rem;border-radius:2px;cursor:pointer;transition:border-color 0.15s;text-align:center;}
+.evidence-card:hover{border-color:var(--border-hi);}
+.evidence-card a{color:inherit;text-decoration:none;display:block;}
+.ev-type-label{font-family:var(--mono);font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem;}
+.ev-file-name{font-family:var(--mono);font-size:0.72rem;color:var(--body);word-break:break-all;line-height:1.4;}
+.ev-img-preview{width:100%;max-height:120px;object-fit:cover;border-radius:2px;margin-bottom:0.4rem;border:1px solid var(--border);cursor:zoom-in;}
+.lb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:500;align-items:center;justify-content:center;cursor:zoom-out;}
+.lb-overlay.open{display:flex;}
+.lb-img{max-width:92vw;max-height:88vh;object-fit:contain;border:1px solid var(--border);border-radius:3px;}
+.lb-close{position:absolute;top:1rem;right:1.25rem;background:none;border:none;color:#fff;font-size:1.8rem;cursor:pointer;z-index:501;line-height:1;}
+.ev-link-name{color:var(--green);font-size:0.72rem;font-family:var(--mono);word-break:break-all;}
+.timeline{display:flex;flex-direction:column;}
+.tl-item{display:flex;gap:0.85rem;padding-bottom:0.85rem;position:relative;padding-left:1.25rem;}
+.tl-item::before{content:'';position:absolute;left:0;top:5px;width:6px;height:6px;background:var(--red);border-radius:50%;}
+.tl-item::after{content:'';position:absolute;left:2.5px;top:11px;width:1px;bottom:0;background:var(--border);}
+.tl-item:last-child::after{display:none;}
+.tl-date{font-family:var(--mono);font-size:0.68rem;color:var(--muted);white-space:nowrap;min-width:160px;}
+.tl-text{font-size:0.82rem;color:var(--body);}
+.detail-actions{display:flex;gap:0.6rem;flex-wrap:wrap;padding-top:1.25rem;border-top:1px solid var(--border);}
+
+.admin-bar{display:none;background:rgba(217,79,79,0.07);border-bottom:1px solid rgba(217,79,79,0.15);padding:0.5rem 1.75rem;align-items:center;justify-content:space-between;gap:1rem;}
+.admin-bar.visible{display:flex;}
+.admin-bar-left{font-family:var(--mono);font-size:0.7rem;color:var(--red);letter-spacing:0.06em;}
+.admin-bar-right{display:flex;gap:0.5rem;}
+
+.toast{position:fixed;bottom:1.75rem;right:1.75rem;z-index:400;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--green);padding:0.75rem 1.1rem;border-radius:3px;font-size:0.82rem;color:var(--heading);transform:translateY(80px);opacity:0;transition:transform 0.25s ease,opacity 0.25s ease;pointer-events:none;max-width:300px;font-family:var(--mono);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.err{border-left-color:var(--red);}
+.toast.warn{border-left-color:var(--amber);}
+
+/* Policy modal */
+.policy-body{padding:1.5rem;overflow-y:auto;max-height:80vh;font-size:0.88rem;color:var(--body);line-height:1.75;}
+.policy-body h2{font-family:var(--cond);font-size:1.1rem;color:var(--white);margin:1.5rem 0 0.5rem;text-transform:uppercase;letter-spacing:0.05em;}
+.policy-body h2:first-child{margin-top:0;}
+.policy-body p{margin-bottom:0.85rem;}
+.policy-body ul{padding-left:1.25rem;margin-bottom:0.85rem;}
+.policy-body li{margin-bottom:0.35rem;}
+
+footer{margin-top:5rem;border-top:1px solid var(--border);padding:2rem 1.75rem;}
+.footer-inner{max-width:1100px;margin:0 auto;}
+.footer-notice{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--border-hi);padding:1rem 1.25rem;margin-bottom:1.5rem;border-radius:2px;font-size:0.8rem;color:var(--muted);line-height:1.7;}
+.footer-notice strong{color:var(--body);font-weight:500;}
+.footer-nav{display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.25rem;}
+.footer-nav a{font-family:var(--mono);font-size:0.72rem;color:var(--muted);text-decoration:none;letter-spacing:0.04em;transition:color 0.15s;cursor:pointer;}
+.footer-nav a:hover{color:var(--body);}
+.footer-copy{font-family:var(--mono);font-size:0.68rem;color:var(--muted);}
+
+@media(max-width:760px){
+  .hero-grid{grid-template-columns:1fr;gap:2rem;}
+  .stats-panel{display:none;}
+  nav{display:none;}
+  .form-row{grid-template-columns:1fr;}
+  .cc-grid{grid-template-columns:1fr;}
+  .admin-bar{flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<div class="admin-bar" id="admin-bar">
+  <span class="admin-bar-left">ADMIN SESSION ACTIVE — snugglesmcbear</span>
+  <div class="admin-bar-right">
+    <button class="btn btn-outline" onclick="openSubmitModal()">+ File Report</button>
+    <button class="btn btn-ghost" onclick="adminLogout()">Log Out</button>
+  </div>
+</div>
+
+<header>
+  <a href="#" class="logo-link">
+    <svg class="logo-svg" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="34" height="34" rx="3" fill="#d94f4f"/>
+      <path d="M17 5L7 9V17C7 22.5 11.5 27.4 17 29C22.5 27.4 27 22.5 27 17V9L17 5Z" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>
+      <circle cx="15.5" cy="16.5" r="4" stroke="#fff" stroke-width="1.6"/>
+      <line x1="18.8" y1="19.8" x2="22" y2="23" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <span class="logo-wordmark">Case<span>Watch</span></span>
+  </a>
+  <nav>
+    <a href="#records">Records</a>
+    <a href="#search-section">Search</a>
+    <a href="#about">About</a>
+  </nav>
+  <div class="header-right">
+    <button class="btn btn-ghost" id="login-btn" onclick="openLogin()">Admin Login</button>
+    <button class="btn btn-primary" id="admin-post-btn" style="display:none" onclick="openSubmitModal()">+ File Report</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="hero-tag">Public Record Registry &mdash; Est. 2026</div>
+      <h1>Community<br><span class="accent">Accountability</span><br>Database</h1>
+      <p class="hero-desc">A transparent public record of reported online misconduct. Search by username, user ID, platform, or case number. All reports are verified and timestamped.</p>
+      <div class="hero-actions">
+        <a href="#records" class="btn btn-primary">View Records</a>
+        <a href="#search-section" class="btn btn-ghost">Search Database</a>
+      </div>
+    </div>
+    <div class="stats-panel">
+      <div class="stats-panel-title">Database Overview</div>
+      <div class="stat-row"><span class="stat-lbl">Total Reports</span><span class="stat-val red" id="stat-total">0</span></div>
+      <div class="stat-row"><span class="stat-lbl">Verified Cases</span><span class="stat-val green" id="stat-verified">0</span></div>
+      <div class="stat-row"><span class="stat-lbl">High Severity</span><span class="stat-val red" id="stat-high">0</span></div>
+      <div class="stat-row"><span class="stat-lbl">This Month</span><span class="stat-val amber" id="stat-month">0</span></div>
+      <div class="stat-row"><span class="stat-lbl">Platforms Tracked</span><span class="stat-val" id="stat-platforms">0</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="search-section" id="search-section">
+  <div class="search-inner">
+    <div class="search-row">
+      <select class="search-scope" id="search-scope">
+        <option value="all">All Fields</option>
+        <option value="username">Username</option>
+        <option value="userid">User ID</option>
+        <option value="platform">Platform</option>
+        <option value="caseid">Case ID</option>
+        <option value="category">Category</option>
+      </select>
+      <input type="text" class="search-field" id="search-field" placeholder="Search usernames, IDs, platforms, case numbers..." oninput="doSearch()" />
+      <button class="search-go" onclick="doSearch()">Search</button>
+    </div>
+    <div class="filter-bar">
+      <button class="chip active" data-sev="all" onclick="setSev('all',this)">All</button>
+      <button class="chip" data-sev="high" onclick="setSev('high',this)">High</button>
+      <button class="chip" data-sev="medium" onclick="setSev('medium',this)">Medium</button>
+      <button class="chip" data-sev="low" onclick="setSev('low',this)">Low</button>
+      <div class="filter-sep"></div>
+      <button class="chip" id="chip-verified" onclick="toggleVerified(this)">Verified Only</button>
+    </div>
+  </div>
+</section>
+
+<main class="page" id="records">
+  <div class="records-header">
+    <div class="records-title">Case Records — Public Access</div>
+    <span class="result-info" id="result-info"></span>
+  </div>
+  <div class="case-list" id="case-list"></div>
+</main>
+
+<footer id="about">
+  <div class="footer-inner">
+    <div class="footer-notice">
+      <strong>Legal Notice:</strong> CaseWatch is a community-maintained public record platform. All reports reflect alleged misconduct and do not constitute legal findings, charges, or verdicts. No personally identifying information including real names, home addresses, phone numbers, or photographs of individuals is published on this platform. Reports cover online conduct and usernames only. If you believe a report is inaccurate, contact us through the dispute process.
+    </div>
+    <div class="footer-nav">
+      <a onclick="openPolicy('guidelines')">Submission Guidelines</a>
+      <a onclick="openPolicy('privacy')">Privacy Policy</a>
+      <a onclick="openPolicy('dispute')">Dispute a Report</a>
+      <a onclick="openPolicy('takedown')">Takedown Request</a>
+      <a onclick="openPolicy('contact')">Contact</a>
+    </div>
+    <div class="footer-copy">Copyright &copy; 2026 CaseWatch &mdash; Public Record Registry &mdash; All timestamps displayed in EST / UTC</div>
+  </div>
+</footer>
+
+<!-- LOGIN MODAL -->
+<div class="overlay" id="login-modal">
+  <div class="modal-box" style="max-width:400px;border-top:2px solid var(--red)">
+    <div class="modal-head">
+      <span class="modal-htitle">Admin Login</span>
+      <button class="modal-close" onclick="closeLogin()">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:1.25rem;">Access is restricted to authorized administrators only. Public visitors can view and search all records without logging in.</p>
+      <div class="form-group">
+        <label class="fg-label">Username</label>
+        <input type="text" class="fg-input" id="login-user" placeholder="Username" autocomplete="username" />
+      </div>
+      <div class="form-group">
+        <label class="fg-label">Password</label>
+        <input type="password" class="fg-input" id="login-pass" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" />
+      </div>
+      <div id="login-err" style="display:none;font-family:var(--mono);font-size:0.75rem;color:var(--red);margin-top:0.5rem;"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeLogin()">Cancel</button>
+      <button class="btn btn-primary" onclick="doLogin()">Log In</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUBMIT MODAL -->
+<div class="overlay" id="submit-modal">
+  <div class="modal-box" style="max-width:700px;border-top:2px solid var(--red)">
+    <div class="modal-head">
+      <span class="modal-htitle">File New Report</span>
+      <button class="modal-close" onclick="closeSubmit()">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <div class="notice-box">
+        <div class="notice-title">Submission Rules</div>
+        <div class="notice-text">Do not include real names, home addresses, phone numbers, or photographs of individuals. Reports must pertain to online conduct only. Usernames and user IDs only. False reports will be removed.</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="fg-label">Platform <span class="fg-req">*</span></label>
+          <select class="fg-select" id="f-platform">
+            <option value="">Select...</option>
+            <option>Discord</option><option>Twitter / X</option><option>Reddit</option>
+            <option>Roblox</option><option>Steam</option><option>TikTok</option>
+            <option>Instagram</option><option>YouTube</option><option>Twitch</option>
+            <option>Telegram</option><option>Facebook</option><option>Snapchat</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="fg-label">Category <span class="fg-req">*</span></label>
+          <select class="fg-select" id="f-category">
+            <option value="">Select...</option>
+            <option>Scam / Fraud</option><option>Harassment</option><option>Impersonation</option>
+            <option>Theft / Chargebacks</option><option>Doxxing</option><option>Predatory Behavior</option>
+            <option>Ban Evasion</option><option>Malware / Phishing</option>
+            <option>Spam / Bot Activity</option><option>Other Misconduct</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="fg-label">Username / Handle <span class="fg-req">*</span></label>
+          <input type="text" class="fg-input" id="f-username" placeholder="@username or handle" />
+        </div>
+        <div class="form-group">
+          <label class="fg-label">User ID / Tag</label>
+          <input type="text" class="fg-input" id="f-userid" placeholder="e.g. 123456789" />
+        </div>
+        <div class="form-group">
+          <label class="fg-label">Severity <span class="fg-req">*</span></label>
+          <select class="fg-select" id="f-severity">
+            <option value="high">High</option>
+            <option value="medium" selected>Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="fg-label">Verified Case</label>
+          <select class="fg-select" id="f-verified">
+            <option value="false">No</option>
+            <option value="true">Yes — Evidence Confirmed</option>
+          </select>
+        </div>
+        <div class="form-group form-full">
+          <label class="fg-label">Report Title <span class="fg-req">*</span></label>
+          <input type="text" class="fg-input" id="f-title" placeholder="Brief description of incident" />
+        </div>
+        <div class="form-group form-full">
+          <label class="fg-label">Full Description <span class="fg-req">*</span></label>
+          <textarea class="fg-textarea" id="f-desc" placeholder="Describe the incident in full. Include platform behavior, pattern of conduct, and any relevant context. Do not include personal identifying information."></textarea>
+        </div>
+        <div class="form-group form-full">
+          <label class="fg-label">Upload Evidence Files</label>
+          <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-inp').click()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+            <div class="upload-title">Drop files here or click to browse</div>
+            <div class="upload-sub">Images &middot; Videos &middot; PDFs &middot; Documents — max 25 MB each</div>
+          </div>
+          <input type="file" id="file-inp" multiple accept="image/*,video/*,.pdf,.txt,.doc,.docx,.csv" style="display:none" onchange="onFileSelect(event)" />
+          <div class="file-list" id="file-list"></div>
+        </div>
+        <div class="form-group form-full">
+          <label class="fg-label">Evidence Links (URLs)</label>
+          <div class="link-row">
+            <input type="url" class="fg-input" id="link-inp" placeholder="https://..." />
+            <button class="btn btn-ghost" onclick="addLink()" style="flex-shrink:0">Add Link</button>
+          </div>
+          <div class="link-entries" id="link-entries"></div>
+        </div>
+        <div class="form-group form-full" style="border-top:1px solid var(--border);padding-top:1rem;margin-top:0.25rem">
+          <div class="cb-row">
+            <input type="checkbox" id="cb1" />
+            <label for="cb1">This information is accurate. No real names, addresses, or personal identifying information is included. <span class="fg-req">*</span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeSubmit()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitReport()">Publish Report</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="overlay" id="detail-modal">
+  <div class="modal-box" style="max-width:800px;border-top:2px solid var(--red)">
+    <div class="modal-head">
+      <span class="modal-htitle">Case File</span>
+      <button class="modal-close" onclick="closeDetail()">&#10005;</button>
+    </div>
+    <div class="modal-body" id="detail-body"></div>
+  </div>
+</div>
+
+<!-- POLICY MODAL -->
+<div class="overlay" id="policy-modal">
+  <div class="modal-box" style="max-width:680px;border-top:2px solid var(--border-hi)">
+    <div class="modal-head">
+      <span class="modal-htitle" id="policy-title">Policy</span>
+      <button class="modal-close" onclick="closePolicy()">&#10005;</button>
+    </div>
+    <div class="policy-body" id="policy-body"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closePolicy()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lb-overlay" id="lb-overlay" onclick="closeLB()">
+  <button class="lb-close" onclick="closeLB()">&#10005;</button>
+  <img class="lb-img" id="lb-img" src="" alt="Evidence" onclick="event.stopPropagation()" />
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ADMIN_USER = 'snugglesmcbear';
+const ADMIN_PASS = 'Josiah2013$';
+const STORE_KEY  = 'casewatch_v3';
+const AUTH_KEY   = 'casewatch_auth';
+
+let reports      = [];
+let isAdmin      = false;
+let fileSev      = 'all';
+let filterVerif  = false;
+let uploadedFiles = [];
+let addedLinks   = [];
+
+// ── SEVERITY ORDER ──
+const SEV_ORDER = { high: 0, medium: 1, low: 2 };
+function sortBySeverity(list) {
+  return [...list].sort((a, b) => SEV_ORDER[a.severity] - SEV_ORDER[b.severity]);
+}
+
+// ── PERSISTENCE ──
+// ── NETLIFY BLOBS API (persists cross-device, cross-session) ──
+async function load() {
+  try {
+    showLoadingState(true);
+    const res = await fetch('/api/reports');
+    if (!res.ok) throw new Error('fetch failed');
+    reports = await res.json();
+    if (!Array.isArray(reports)) reports = [];
+  } catch (e) {
+    console.error('Load error:', e);
+    reports = [];
+  } finally {
+    showLoadingState(false);
+  }
+}
+async function save() {
+  try {
+    await fetch('/api/reports/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(reports)
+    });
+  } catch (e) {
+    console.error('Save error:', e);
+    toast('Failed to save — check your connection.', 'err');
+  }
+}
+function showLoadingState(on) {
+  document.getElementById('result-info').textContent = on ? 'Loading...' : '';
+  if (on) document.getElementById('case-list').innerHTML = '<div class="empty"><div class="empty-title" style="color:var(--muted)">Loading records...</div></div>';
+}
+function loadAuth() { isAdmin = localStorage.getItem(AUTH_KEY) === '1'; }
+function saveAuth() {
+  if (isAdmin) localStorage.setItem(AUTH_KEY, '1');
+  else localStorage.removeItem(AUTH_KEY);
+}
+
+// ── AUTH ──
+function openLogin() {
+  document.getElementById('login-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('login-user').focus(), 80);
+}
+function closeLogin() {
+  document.getElementById('login-modal').classList.remove('open');
+  document.body.style.overflow = '';
+  document.getElementById('login-err').style.display = 'none';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+}
+function doLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  if (u === ADMIN_USER && p === ADMIN_PASS) {
+    isAdmin = true; saveAuth(); applyAuthUI(); closeLogin();
+    toast('Logged in as ' + ADMIN_USER, 'green');
+  } else {
+    const el = document.getElementById('login-err');
+    el.textContent = 'Invalid username or password.';
+    el.style.display = 'block';
+    document.getElementById('login-pass').value = '';
+  }
+}
+function adminLogout() {
+  isAdmin = false; saveAuth(); applyAuthUI();
+  toast('Logged out.', 'warn');
+}
+function applyAuthUI() {
+  document.getElementById('admin-bar').classList.toggle('visible', isAdmin);
+  document.getElementById('login-btn').style.display = isAdmin ? 'none' : '';
+  document.getElementById('admin-post-btn').style.display = isAdmin ? '' : 'none';
+  doSearch(); // re-render to show/hide admin controls
+}
+
+// ── TIMESTAMPS ──
+function fmtEST(iso) {
+  return new Date(iso).toLocaleString('en-US', {
+    timeZone:'America/New_York', year:'numeric', month:'short', day:'numeric',
+    hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true
+  }) + ' EST';
+}
+function fmtUTC(iso) { return new Date(iso).toUTCString(); }
+function fmtUnix(iso) { return Math.floor(new Date(iso).getTime() / 1000); }
+
+// ── CASE ID ──
+function newCaseId() {
+  const yr = new Date().getFullYear();
+  const n  = String(reports.length + 1).padStart(4, '0');
+  return 'CW-' + yr + '-' + n;
+}
+
+// ── EVIDENCE HELPERS ──
+function evType(file) {
+  if (file.type && file.type.startsWith('image/')) return 'image';
+  if (file.type && file.type.startsWith('video/')) return 'video';
+  return 'file';
+}
+function evPillClass(type) {
+  return { image:'img-pill', video:'vid-pill', link:'link-pill', file:'file-pill' }[type] || 'file-pill';
+}
+function evTypeLabel(type) {
+  return { image:'IMG', video:'VID', link:'URL', file:'FILE' }[type] || 'FILE';
+}
+function isImageUrl(url) {
+  return /\.(png|jpe?g|gif|webp|bmp|svg)(\?.*)?$/i.test(url);
+}
+
+// ── STATS ──
+function updateStats() {
+  const now = new Date();
+  const thisMonth = reports.filter(r => {
+    const d = new Date(r.timestamp);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }).length;
+  document.getElementById('stat-total').textContent    = reports.length;
+  document.getElementById('stat-verified').textContent = reports.filter(r => r.verified).length;
+  document.getElementById('stat-high').textContent     = reports.filter(r => r.severity === 'high').length;
+  document.getElementById('stat-month').textContent    = thisMonth;
+  document.getElementById('stat-platforms').textContent = new Set(reports.map(r => r.platform)).size;
+}
+
+// ── RENDER CARDS ──
+function render(list) {
+  const el = document.getElementById('case-list');
+  const sorted = sortBySeverity(list);
+  document.getElementById('result-info').textContent = sorted.length + ' record' + (sorted.length !== 1 ? 's' : '') + ' — visible to all visitors';
+
+  if (sorted.length === 0) {
+    el.innerHTML = `<div class="empty">
+      <div class="empty-title">No records found</div>
+      <div class="empty-sub">Adjust your search or filters.${isAdmin ? ' You can file a new report from the admin bar.' : ''}</div>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = sorted.map(r => {
+    const proof = r.proof || [];
+    const adminDeleteBtn = isAdmin ? `<button class="btn btn-muted" style="font-size:0.72rem;padding:4px 10px;" onclick="event.stopPropagation();deleteReport('${r.id}')">Delete</button>` : '';
+    const evHtml = `<div class="cc-evidence" style="justify-content:${proof.length ? 'space-between' : 'flex-end'}">
+      ${proof.length ? `<div class="ev-list">
+        ${proof.slice(0,5).map(p => `<span class="ev-pill ${evPillClass(p.type)}">${evTypeLabel(p.type)}: ${p.name.length > 24 ? p.name.slice(0,21)+'...' : p.name}</span>`).join('')}
+        ${proof.length > 5 ? `<span class="ev-pill">+${proof.length - 5} more</span>` : ''}
+      </div>` : ''}
+      <div class="cc-actions">
+        ${adminDeleteBtn}
+        <button class="btn btn-ghost" style="font-size:0.72rem;padding:4px 10px;" onclick="event.stopPropagation();copyRef('${r.id}')">Copy ID</button>
+        <button class="btn btn-outline" style="font-size:0.72rem;padding:4px 10px;" onclick="event.stopPropagation();openDetail('${r.id}')">View Case</button>
+      </div>
+    </div>`;
+
+    return `<div class="case-card sev-${r.severity}" onclick="openDetail('${r.id}')">
+      <div class="cc-top">
+        <div class="cc-badges">
+          <span class="badge badge-id">${r.id}</span>
+          <span class="badge badge-${r.severity}">${r.severity.toUpperCase()}</span>
+          ${r.verified ? '<span class="badge badge-verified">Verified</span>' : ''}
+          <span class="badge badge-platform">${r.platform}</span>
+          <span class="badge badge-cat">${r.category}</span>
+        </div>
+        <span class="cc-ts">${fmtEST(r.timestamp)}</span>
+      </div>
+      <div class="cc-title">${r.title}</div>
+      <div class="cc-grid">
+        <div class="cc-fields">
+          <div class="cf"><span class="cf-lbl">Username</span><span class="cf-val hl">${r.username}</span></div>
+          ${r.userid ? `<div class="cf"><span class="cf-lbl">User ID</span><span class="cf-val">${r.userid}</span></div>` : ''}
+          <div class="cf"><span class="cf-lbl">Platform</span><span class="cf-val">${r.platform}</span></div>
+          <div class="cf"><span class="cf-lbl">Category</span><span class="cf-val">${r.category}</span></div>
+        </div>
+        <div class="cc-desc">${r.description.length > 220 ? r.description.slice(0,217)+'...' : r.description}</div>
+      </div>
+      ${evHtml}
+    </div>`;
+  }).join('');
+}
+
+// ── SEARCH + FILTER ──
+function doSearch() {
+  const q     = document.getElementById('search-field').value.trim().toLowerCase();
+  const scope = document.getElementById('search-scope').value;
+  const list  = reports.filter(r => {
+    if (fileSev !== 'all' && r.severity !== fileSev) return false;
+    if (filterVerif && !r.verified) return false;
+    if (!q) return true;
+    const map = {
+      username: r.username,
+      userid:   r.userid || '',
+      platform: r.platform,
+      caseid:   r.id,
+      category: r.category,
+      all: [r.id, r.username, r.userid, r.platform, r.category, r.title, r.description].join(' ')
+    };
+    return (map[scope] || map.all).toLowerCase().includes(q);
+  });
+  render(list);
+}
+function setSev(s, btn) {
+  fileSev = s;
+  document.querySelectorAll('[data-sev]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  doSearch();
+}
+function toggleVerified(btn) {
+  filterVerif = !filterVerif;
+  btn.classList.toggle('active', filterVerif);
+  doSearch();
+}
+
+// ── SUBMIT ──
+function openSubmitModal() {
+  if (!isAdmin) { toast('Admin access required.', 'err'); return; }
+  document.getElementById('submit-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeSubmit() {
+  document.getElementById('submit-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+async function submitReport() {
+  if (!isAdmin) { toast('Admin access required.', 'err'); return; }
+  const platform    = document.getElementById('f-platform').value;
+  const category    = document.getElementById('f-category').value;
+  const username    = document.getElementById('f-username').value.trim();
+  const userid      = document.getElementById('f-userid').value.trim();
+  const severity    = document.getElementById('f-severity').value;
+  const verified    = document.getElementById('f-verified').value === 'true';
+  const title       = document.getElementById('f-title').value.trim();
+  const description = document.getElementById('f-desc').value.trim();
+  const cb          = document.getElementById('cb1').checked;
+
+  if (!platform || !category || !username || !title || !description) {
+    toast('Fill all required fields.', 'err'); return;
+  }
+  if (!cb) { toast('Confirm the submission statement.', 'err'); return; }
+
+  // Convert image files to base64 so they're stored and viewable cross-device
+  const fileProof = await Promise.all(uploadedFiles.map(f => new Promise(resolve => {
+    const t = evType(f);
+    if (t === 'image') {
+      const reader = new FileReader();
+      reader.onload = e => resolve({ type: 'image', name: f.name, data: e.target.result });
+      reader.readAsDataURL(f);
+    } else {
+      resolve({ type: t, name: f.name });
+    }
+  })));
+  const proof = [
+    ...fileProof,
+    ...addedLinks.map(l => ({ type: 'link', name: l }))
+  ];
+
+  const report = {
+    id: newCaseId(), platform, category, username,
+    userid: userid || null, severity, verified, title, description, proof,
+    timestamp: new Date().toISOString()
+  };
+
+  reports.unshift(report);
+  await save(); updateStats(); doSearch(); closeSubmit(); resetForm();
+  toast('Report ' + report.id + ' published.', 'green');
+}
+function resetForm() {
+  ['f-platform','f-category','f-username','f-userid','f-severity','f-verified','f-title','f-desc'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    else el.value = '';
+  });
+  document.getElementById('cb1').checked = false;
+  uploadedFiles = []; addedLinks = [];
+  document.getElementById('file-list').innerHTML = '';
+  document.getElementById('link-entries').innerHTML = '';
+  document.getElementById('file-inp').value = '';
+}
+
+// ── DELETE ──
+async function deleteReport(id) {
+  if (!isAdmin) return;
+  if (!confirm('Delete report ' + id + '? This cannot be undone.')) return;
+  reports = reports.filter(r => r.id !== id);
+  await save(); updateStats(); doSearch();
+  toast('Report ' + id + ' deleted.', 'warn');
+}
+
+// ── FILE HANDLING ──
+function onFileSelect(e) { Array.from(e.target.files).forEach(addFile); }
+function onDragOver(e)   { e.preventDefault(); document.getElementById('upload-zone').classList.add('dragover'); }
+function onDragLeave()   { document.getElementById('upload-zone').classList.remove('dragover'); }
+function onDrop(e)       { e.preventDefault(); document.getElementById('upload-zone').classList.remove('dragover'); Array.from(e.dataTransfer.files).forEach(addFile); }
+function addFile(f) {
+  if (f.size > 25 * 1024 * 1024) { toast('File too large (max 25 MB): ' + f.name, 'err'); return; }
+  uploadedFiles.push(f);
+  renderFiles();
+}
+function removeFile(i) { uploadedFiles.splice(i,1); renderFiles(); }
+function renderFiles() {
+  document.getElementById('file-list').innerHTML = uploadedFiles.map((f,i) => `
+    <div class="file-entry">
+      <span class="file-entry-name">[${evTypeLabel(evType(f))}] ${f.name} — ${(f.size/1024).toFixed(0)} KB</span>
+      <button class="file-rm" onclick="removeFile(${i})">&#10005;</button>
+    </div>`).join('');
+}
+
+// ── LINK HANDLING ──
+function addLink() {
+  const inp = document.getElementById('link-inp');
+  const v = inp.value.trim();
+  if (!v || !v.startsWith('http')) { toast('Enter a valid URL starting with http', 'err'); return; }
+  addedLinks.push(v);
+  inp.value = '';
+  renderLinks();
+}
+function removeLink(i) { addedLinks.splice(i,1); renderLinks(); }
+function renderLinks() {
+  document.getElementById('link-entries').innerHTML = addedLinks.map((l,i) => `
+    <div class="link-entry">
+      <span>${l.length > 60 ? l.slice(0,57)+'...' : l}</span>
+      <button class="file-rm" onclick="removeLink(${i})">&#10005;</button>
+    </div>`).join('');
+}
+document.getElementById('link-inp').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addLink(); } });
+
+// ── DETAIL MODAL ──
+function openDetail(id) {
+  const r = reports.find(x => x.id === id);
+  if (!r) return;
+  const proof = r.proof || [];
+
+  // Build evidence grid — images show preview, links are clickable
+  let evidenceSection = '';
+  if (proof.length) {
+    const cards = proof.map(p => {
+      // image: base64 data stored in p.data, or a URL link
+      if (p.type === 'image' && p.data) {
+        return `<div class="evidence-card" onclick="event.stopPropagation();openLB('${p.data}')">
+          <div class="ev-type-label">IMAGE — click to view</div>
+          <img src="${p.data}" class="ev-img-preview" alt="Evidence image" />
+          <div class="ev-file-name">${p.name}</div>
+        </div>`;
+      }
+      if (p.type === 'link') {
+        const isImg = isImageUrl(p.name);
+        if (isImg) {
+          return `<div class="evidence-card" onclick="event.stopPropagation();openLB('${p.name}')">
+            <div class="ev-type-label">IMAGE LINK — click to view</div>
+            <img src="${p.name}" class="ev-img-preview" alt="Evidence image" onerror="this.style.display='none'" />
+            <div class="ev-link-name">${p.name.length > 40 ? p.name.slice(0,37)+'...' : p.name}</div>
+          </div>`;
+        }
+        return `<div class="evidence-card">
+          <div class="ev-type-label">URL</div>
+          <a href="${p.name}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:var(--green);font-family:var(--mono);font-size:0.72rem;word-break:break-all;display:block;padding:0.25rem 0;">
+            ↗ ${p.name.length > 50 ? p.name.slice(0,47)+'...' : p.name}
+          </a>
+        </div>`;
+      }
+      return `<div class="evidence-card">
+        <div class="ev-type-label">${evTypeLabel(p.type)}</div>
+        <div class="ev-file-name">${p.name}</div>
+      </div>`;
+    }).join('');
+    evidenceSection = `<div class="detail-section">
+      <div class="detail-section-label">Evidence (${proof.length} item${proof.length !== 1 ? 's' : ''})</div>
+      <div class="evidence-grid">${cards}</div>
+    </div>`;
+  }
+
+  document.getElementById('detail-body').innerHTML = `
+    <div style="padding-bottom:1.25rem;border-bottom:1px solid var(--border);margin-bottom:1.5rem;">
+      <div class="detail-meta-bar">
+        <span class="badge badge-id">${r.id}</span>
+        <span class="badge badge-${r.severity}">${r.severity.toUpperCase()}</span>
+        ${r.verified ? '<span class="badge badge-verified">Verified</span>' : ''}
+        <span class="badge badge-platform">${r.platform}</span>
+        <span class="badge badge-cat">${r.category}</span>
+      </div>
+      <div class="detail-title-text">${r.title}</div>
+      <div class="ts-block">
+        <div class="ts-line">Filed (EST): <span>${fmtEST(r.timestamp)}</span></div>
+        <div class="ts-line">Filed (UTC): <span>${fmtUTC(r.timestamp)}</span></div>
+        <div class="ts-line">Unix Timestamp: <span>${fmtUnix(r.timestamp)}</span></div>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-label">Subject Information</div>
+      <div class="detail-fields-grid">
+        <div class="cf"><span class="cf-lbl">Username</span><span class="cf-val hl">${r.username}</span></div>
+        ${r.userid ? `<div class="cf"><span class="cf-lbl">User ID / Tag</span><span class="cf-val">${r.userid}</span></div>` : ''}
+        <div class="cf"><span class="cf-lbl">Platform</span><span class="cf-val">${r.platform}</span></div>
+        <div class="cf"><span class="cf-lbl">Category</span><span class="cf-val">${r.category}</span></div>
+        <div class="cf"><span class="cf-lbl">Severity</span><span class="cf-val">${r.severity.toUpperCase()}</span></div>
+        <div class="cf"><span class="cf-lbl">Verified</span><span class="cf-val">${r.verified ? 'Yes' : 'No'}</span></div>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-label">Report Description</div>
+      <div class="detail-desc">${r.description}</div>
+    </div>
+    ${evidenceSection}
+    <div class="detail-section">
+      <div class="detail-section-label">Submission Record</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <span class="tl-date">${fmtEST(r.timestamp)}</span>
+          <span class="tl-text">Report filed and published by administrator.</span>
+        </div>
+        ${r.verified ? `<div class="tl-item">
+          <span class="tl-date">Verified</span>
+          <span class="tl-text">Report reviewed and marked verified. Evidence on file.</span>
+        </div>` : ''}
+      </div>
+    </div>
+    <div class="detail-actions">
+      <button class="btn btn-ghost" onclick="copyRef('${r.id}')">Copy Case ID</button>
+      <button class="btn btn-ghost" onclick="toast('Use the Dispute a Report link in the footer.','warn')">Dispute This Report</button>
+      ${isAdmin ? `<button class="btn btn-muted" onclick="if(confirm('Delete ${r.id}?')){deleteReport('${r.id}');closeDetail();}">Delete Report</button>` : ''}
+      <button class="btn btn-ghost" onclick="closeDetail()">Close</button>
+    </div>`;
+
+  document.getElementById('detail-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDetail() {
+  document.getElementById('detail-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── POLICY PAGES ──
+const POLICIES = {
+  guidelines: {
+    title: 'Submission Guidelines',
+    body: `
+<h2>Who Can Submit</h2>
+<p>Only authorized administrators may file reports on CaseWatch. If you wish to report misconduct, please contact an administrator through the Contact page with your evidence and information.</p>
+<h2>What Is Allowed</h2>
+<ul>
+  <li>Online usernames, handles, and platform-assigned user IDs</li>
+  <li>Descriptions of observed online behavior and patterns of conduct</li>
+  <li>Screenshots, screen recordings, or archived links as supporting evidence</li>
+  <li>Factual summaries of incidents without speculation or personal attacks</li>
+</ul>
+<h2>What Is Prohibited</h2>
+<ul>
+  <li>Real full names, home addresses, phone numbers, or email addresses</li>
+  <li>Photographs or images that identify individuals in real life</li>
+  <li>Financial account details (credit cards, bank info, etc.)</li>
+  <li>False, fabricated, or unsubstantiated reports</li>
+  <li>Reports motivated by personal vendettas without documented evidence</li>
+  <li>Information about minors</li>
+</ul>
+<h2>Evidence Standards</h2>
+<p>Reports marked "Verified" have had their supporting evidence reviewed by an administrator. Unverified reports represent community submissions that have been reviewed for policy compliance but not independently confirmed.</p>
+<h2>Severity Ratings</h2>
+<ul>
+  <li><strong>High:</strong> Serious misconduct including fraud, doxxing, predatory behavior, or malware distribution with documented evidence.</li>
+  <li><strong>Medium:</strong> Repeated or documented harassment, impersonation, chargebacks, or ban evasion.</li>
+  <li><strong>Low:</strong> Minor or isolated incidents, spam, or bot activity with limited documentation.</li>
+</ul>
+<h2>False Reports</h2>
+<p>Submitting knowingly false information is prohibited and will result in the report being removed and the submitter being banned. We take accuracy seriously and review all dispute requests.</p>`
+  },
+  privacy: {
+    title: 'Privacy Policy',
+    body: `
+<h2>Overview</h2>
+<p>CaseWatch is committed to protecting the privacy of both the individuals who visit our site and those mentioned in our records. This policy explains what information we collect and how we use it.</p>
+<h2>Information We Publish</h2>
+<p>CaseWatch publishes only online identifiers — usernames, handles, and platform-assigned user IDs. We do not publish and actively prohibit the submission of real names, physical addresses, phone numbers, email addresses, or photographs of individuals.</p>
+<h2>Visitor Data</h2>
+<p>We do not use tracking cookies, advertising networks, or third-party analytics. We do not collect or store visitor IP addresses, browsing behavior, or any personal information from users who view records. The site is read-only for all non-administrator visitors.</p>
+<h2>Local Storage</h2>
+<p>This site uses your browser's local storage to save the case database and administrator session state. This data stays on your device and is never transmitted to external servers. You can clear it at any time through your browser settings.</p>
+<h2>Administrator Accounts</h2>
+<p>Administrator credentials are stored locally and not transmitted to any external service. Admin sessions persist only in the browser's local storage.</p>
+<h2>Third-Party Links</h2>
+<p>Evidence links submitted within reports may point to third-party websites. CaseWatch is not responsible for the privacy practices of those sites. Links open in a new tab and we recommend exercising caution when visiting linked content.</p>
+<h2>Disputes and Removal</h2>
+<p>If you believe information about you has been published in violation of this policy, please use our Takedown Request process. We respond to all legitimate requests within a reasonable timeframe.</p>
+<h2>Changes to This Policy</h2>
+<p>We may update this policy as the platform evolves. Continued use of the site after changes constitutes acceptance of the updated policy.</p>`
+  },
+  dispute: {
+    title: 'Dispute a Report',
+    body: `
+<h2>How to Dispute</h2>
+<p>If you believe a report filed on CaseWatch contains inaccurate, false, or policy-violating information, you have the right to dispute it. We take disputes seriously and review all submissions.</p>
+<h2>Grounds for Dispute</h2>
+<ul>
+  <li>The report contains factually incorrect information you can disprove with evidence</li>
+  <li>The report includes prohibited personal information (real name, address, etc.)</li>
+  <li>You are not the person described and are being misidentified</li>
+  <li>The report was filed in bad faith or for harassment purposes</li>
+  <li>The incident described did not occur as stated</li>
+</ul>
+<h2>What You'll Need to Provide</h2>
+<ul>
+  <li>The case ID of the report you are disputing (e.g. CW-2026-0001)</li>
+  <li>A clear explanation of why the report is inaccurate or should be removed</li>
+  <li>Supporting evidence where applicable (screenshots, logs, timestamps)</li>
+  <li>Contact information so we can follow up with you</li>
+</ul>
+<h2>Dispute Process</h2>
+<p>Submit your dispute through the Contact page with the subject line "DISPUTE: [Case ID]". Disputes are reviewed by an administrator within 7 business days. You will receive a response regardless of outcome. If a report is found to violate our guidelines, it will be removed or corrected promptly.</p>
+<h2>Appeals</h2>
+<p>If your dispute is denied and you believe the decision was incorrect, you may submit an appeal with additional evidence. Appeals are reviewed by a senior administrator.</p>`
+  },
+  takedown: {
+    title: 'Takedown Request',
+    body: `
+<h2>Takedown Policy</h2>
+<p>CaseWatch will remove or modify reports that violate our submission guidelines or applicable law. We process legitimate takedown requests promptly.</p>
+<h2>Valid Takedown Grounds</h2>
+<ul>
+  <li><strong>Personal Information:</strong> The report contains real names, addresses, phone numbers, or other prohibited personal identifiers.</li>
+  <li><strong>Minors:</strong> The report references or involves anyone under 18 years of age in any capacity.</li>
+  <li><strong>Defamation:</strong> The report contains demonstrably false statements of fact (not opinion) presented as true.</li>
+  <li><strong>Mistaken Identity:</strong> You have been misidentified as the subject of the report.</li>
+  <li><strong>Legal Order:</strong> A valid court order requires removal of specific content.</li>
+</ul>
+<h2>How to Submit a Takedown Request</h2>
+<p>Contact us through the Contact page with the subject line "TAKEDOWN: [Case ID]". Your request must include:</p>
+<ul>
+  <li>The specific case ID</li>
+  <li>The specific content you are requesting removal of</li>
+  <li>The legal or policy basis for your request</li>
+  <li>Your contact information</li>
+  <li>A statement that the information in your request is accurate</li>
+</ul>
+<h2>Response Time</h2>
+<p>We aim to acknowledge all takedown requests within 48 hours and resolve them within 7 business days. For urgent matters involving minors or serious personal safety concerns, we prioritize immediate review.</p>
+<h2>Counter-Notice</h2>
+<p>If a report is removed following a takedown request and the original reporter believes the removal was unwarranted, they may submit a counter-notice with supporting evidence.</p>`
+  },
+  contact: {
+    title: 'Contact',
+    body: `
+<h2>Get In Touch</h2>
+<p>CaseWatch is a community-maintained platform. We welcome feedback, dispute submissions, takedown requests, and general inquiries.</p>
+<p>Email us at: <a href="mailto:siahhisbu3y@gmail.com" style="color:var(--green);font-family:var(--mono);">siahhisbu3y@gmail.com</a></p>
+<h2>For Disputes & Takedowns</h2>
+<p>If you are contacting us about a specific report, please include the case ID and use the appropriate subject line format:</p>
+<ul>
+  <li>Disputes: <strong>DISPUTE: CW-XXXX-XXXX</strong></li>
+  <li>Takedowns: <strong>TAKEDOWN: CW-XXXX-XXXX</strong></li>
+  <li>False reports: <strong>FALSE REPORT: CW-XXXX-XXXX</strong></li>
+</ul>
+<h2>Response Times</h2>
+<ul>
+  <li>General inquiries: 3–5 business days</li>
+  <li>Disputes: 7 business days</li>
+  <li>Urgent safety concerns (involving minors, doxxing of real info): 24–48 hours</li>
+</ul>
+<h2>Submission of Reports</h2>
+<p>If you wish to report misconduct for potential inclusion in the database, please provide your evidence and a summary through the contact form. An administrator will review your submission and follow up.</p>
+<h2>Platform</h2>
+<p>CaseWatch launched in 2026 as a community accountability resource for tracking online misconduct across major platforms. We are committed to accuracy, privacy, and fair process.</p>`
+  }
+};
+
+function openPolicy(key) {
+  const p = POLICIES[key];
+  if (!p) return;
+  document.getElementById('policy-title').textContent = p.title;
+  document.getElementById('policy-body').innerHTML = p.body;
+  document.getElementById('policy-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePolicy() {
+  document.getElementById('policy-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── LIGHTBOX ──
+function openLB(src) {
+  document.getElementById('lb-img').src = src;
+  document.getElementById('lb-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLB() {
+  document.getElementById('lb-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLB(); });
+
+// ── UTILITIES ──
+function copyRef(id) {
+  navigator.clipboard.writeText(id).catch(() => {});
+  toast('Copied: ' + id, 'green');
+}
+function toast(msg, type = 'green') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast' + (type === 'err' ? ' err' : type === 'warn' ? ' warn' : '');
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// close overlays on backdrop click
+['login-modal','submit-modal','detail-modal','policy-modal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => {
+    if (e.target.id === id) {
+      document.getElementById(id).classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+});
+
+// ── INIT ──
+(async () => {
+  document.getElementById('case-list').innerHTML = '<div class="empty"><div class="empty-title" style="color:var(--muted)">Loading records...</div></div>';
+  document.getElementById('result-info').textContent = 'Loading...';
+  loadAuth();
+  applyAuthUI();
+  await load();
+  updateStats();
+  doSearch();
+})();
+</script>
+</body>
+</html>
